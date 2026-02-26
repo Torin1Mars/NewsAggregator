@@ -16,26 +16,24 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(@ApplicationContext private val context: Context, private val NewsRepository : DbRepository): ViewModel()
+class MainViewModel @Inject constructor(@ApplicationContext private val context: Context, private val newsRepository : DbRepository): ViewModel()
 {
 
     init {
         Log.d("MyLog", "View model created")
     }
 
-    val allNewsList = NewsRepository.allUsers
+    val allNewsList = newsRepository.allNews
 
     fun addNewNews (newNews: NewsItem){
         viewModelScope.launch(Dispatchers.IO) {  // in ViewModel lifecycle
-            NewsRepository.addNewsItem(newNews) // This call happens on a background thread  Room thread
+            newsRepository.myNewsTableDao.insertNewNews(newNews) // This call happens on a background thread  Room thread
         }
     }
 
     fun eraseDbTable(){
         viewModelScope.launch(Dispatchers.IO) { // in ViewModel lifecycle
-            NewsRepository.deleteALL() // This call happens on a background thread  Room thread
+            newsRepository.myNewsTableDao.delete_all() // This call happens on a background thread  Room thread
         }
     }
-
 }
-

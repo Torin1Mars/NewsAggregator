@@ -14,6 +14,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.newsagregatour.ViewModels.MainViewModel
 import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.domain.AppDatabase
@@ -31,37 +36,32 @@ class MainActivity : ComponentActivity() {
         //Not triggers init block inside View model object
         //val myMainViewModel : MainViewModel by viewModels()
 
-        val myMainViewModel =  ViewModelProvider(this).get(MainViewModel::class.java)
-
-       setContent {
+        setContent {
+            val mainNavHostController = rememberNavController()
             NewsAgregatourTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                AppNavigation(mainNavHostController)
                 }
             }
-
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun AppNavigation (navController: NavHostController){
+    NavHost(navController = navController,
+        startDestination = Screens.GreetingsScreen.route) {
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NewsAgregatourTheme {
-        Greeting("Android")
+        composable (Screens.GreetingsScreen.route){
+            //GreetingsScreenLayout()
+        }
+
+        composable(Screens.GreetingsScreen.route){
+            //MainScreenLayout()
+        }
+
+        composable(Screens.SplashScreen.route){
+            //SplashScreenLayout()
+            }
+        }
     }
-}
-
 
