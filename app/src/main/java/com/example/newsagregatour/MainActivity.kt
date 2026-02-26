@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
+
 
 @Composable
 fun AppNavigation (navController: NavHostController){
