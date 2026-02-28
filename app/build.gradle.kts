@@ -59,8 +59,6 @@ dependencies {
     //Navigation
     val nav_version = "2.9.7"
     implementation("androidx.navigation:navigation-compose:$nav_version")
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
-    implementation("androidx.navigation:navigation-ui:$nav_version")
 
     //Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")

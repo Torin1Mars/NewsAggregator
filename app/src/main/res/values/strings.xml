@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">NewsAggregator</string>
+    <string name="previewImageDescr">Greetings</string>
+
+    <string name="hello_message">Hello, World!</string>
+
+
 </resources>

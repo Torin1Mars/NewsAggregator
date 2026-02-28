@@ -312,9 +312,10 @@
                       <PersistentState>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="25ac30" />
-                            <entry key="outputName" value="ic_android_black_24dp" />
-                            <entry key="sourceFile" value="C:\My_Projects\NewsAggregator" />
+                            <entry key="outputName" value="newsicon" />
+                            <entry key="sourceFile" value="C:\Users\Admin\Desktop\NewsIcon.svg" />
                           </map>
                         </option>
                       </PersistentState>
