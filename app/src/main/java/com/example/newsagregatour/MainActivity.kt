@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.newsagregatour.MyScreens.GreetingScreen
+import com.example.newsagregatour.MyScreens.MainScreen
 import com.example.newsagregatour.ViewModels.MainViewModel
 import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.domain.AppDatabase
@@ -56,14 +57,14 @@ fun AppNavigation (navController: NavHostController){
         startDestination = Screens.GreetingsScreen.route) {
 
         composable (route = Screens.GreetingsScreen.route){
-            GreetingScreen()
+            GreetingScreen(navController)
         }
 
-        composable(route = Screens.GreetingsScreen.name){
-            //MainScreenLayout()
+        composable(route = Screens.MainScreen.route){
+            MainScreen(navController)
         }
 
-        composable(route = Screens.SplashScreen.name){
+        composable(route = Screens.SplashScreen.route){
             //SplashScreenLayout()
             }
         }

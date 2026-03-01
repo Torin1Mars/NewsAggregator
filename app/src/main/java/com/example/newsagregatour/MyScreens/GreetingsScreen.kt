@@ -28,10 +28,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.newsagregatour.Screens
 import kotlinx.coroutines.delay
 
 @Composable
-fun GreetingScreen() {
+fun GreetingScreen(navHostController:NavHostController) {
     val modifier = Modifier
 
     var startAnimation by remember {mutableStateOf(false)}
@@ -40,21 +42,27 @@ fun GreetingScreen() {
             dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessVeryLow
         ), label = "alphaAnimation")
 
-    //TODO add normal secound animation
+
 
     val rotationAngle by animateFloatAsState (
         targetValue = if (startAnimation) 360f else 0f, animationSpec = spring(
         dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessVeryLow
         ), label = "alphaAnimation")
 
-    // Use LaunchedEffect to trigger the animation when the composable enters the composition
+    // LaunchedEffect to trigger the animation
     LaunchedEffect(Unit) {
-        delay(1000) // Optional: Add a delay before the animation starts
+        delay(1000) // Delay before the animation starts
         startAnimation = true
     }
 
-    fun restartAnimation(){
+    // LaunchedEffect to trigger the appearing main screen
+    LaunchedEffect(Unit) {
+        delay(4000) // Delay before the animation starts
+        navHostController.navigate(Screens.MainScreen.route)
+    }
 
+    fun restartThisScreen():Unit{
+        navHostController.navigate(Screens.GreetingsScreen.route)
     }
 
    Box(
@@ -62,7 +70,7 @@ fun GreetingScreen() {
             .fillMaxSize()
             .clickable (indication = rememberRipple(),// Uses new IndicationNodeFactory
                     interactionSource = remember { MutableInteractionSource() },
-                onClick = {restartAnimation()}),
+                onClick = {restartThisScreen()}),
         contentAlignment = Alignment.Center)
      {
         AnimatedVisibility(
