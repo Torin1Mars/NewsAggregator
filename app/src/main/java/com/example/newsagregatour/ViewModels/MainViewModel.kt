@@ -2,6 +2,7 @@ package com.example.newsagregatour.ViewModels
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,11 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context, private val newsRepository : DbRepository): ViewModel()
 {
-
-    init {
-        Log.d("MyLog", "View model created")
-    }
-
+    val bgColor = Color.Gray
     val allNewsList = newsRepository.allNews
 
     fun addNewNews (newNews: NewsItem){
