@@ -1,8 +1,17 @@
 package com.example.newsagregatour.MyScreens
 
-import android.R.attr.y
-import android.annotation.SuppressLint
-import android.view.Surface
+import android.widget.Button
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +31,9 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -31,19 +42,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import com.example.newsagregatour.ui.theme.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.example.newsagregatour.R
 import com.example.newsagregatour.ViewModels.MainViewModel
@@ -125,13 +133,35 @@ fun TopBar(modifier: Modifier)
 
 @Composable
 fun bottomSplashScreen(modifier: Modifier){
+
+    SimpleHorizontalSlider()
+/*
     Column {
         Spacer(modifier = modifier.fillMaxWidth().weight(1f))
 
         Surface(modifier = modifier.fillMaxWidth()
-            .height(400.dp).padding(bottom = 50.dp),
+            .height(400.dp)
+            .padding(bottom = 50.dp)
+            .offset (y = -screenOffset) ,
             shape = RoundedCornerShape(5),
             color = Color.Gray.copy(alpha = 0.5f)){
         }
+    }*/
+}
+
+@Composable
+fun SimpleHorizontalSlider() {
+    var sliderValue by remember { mutableStateOf(0.5f) } // Initial value
+
+    Column {
+        Slider(
+            value = sliderValue
+            onValueChange = { newValue ->
+                sliderValue = newValue // Update the state when the value changes
+            },
+            valueRange = 0f..1f, // Define the range of values (0.0 to 1.0)
+            steps = 0 // 0 steps makes it a continuous slider
+        )
+        Text(text = "Value: $sliderValue")
     }
 }
