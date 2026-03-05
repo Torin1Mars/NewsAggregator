@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.*
@@ -61,7 +62,7 @@ fun GreetingScreen(navHostController:NavHostController) {
    Box(
         modifier = modifier
             .fillMaxSize()
-            .clickable (indication = rememberRipple(),// Uses new IndicationNodeFactory
+            .clickable (indication = ripple(),  // Uses new IndicationNodeFactory
                     interactionSource = remember { MutableInteractionSource() },
                 onClick = {restartThisScreen()}),
         contentAlignment = Alignment.Center)
