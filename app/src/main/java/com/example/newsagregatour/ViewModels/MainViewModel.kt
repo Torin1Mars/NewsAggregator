@@ -19,7 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context, private val newsRepository : DbRepository): ViewModel()
 {
-    val bgColor = Color.Gray
     val allNewsList = newsRepository.allNews
 
     fun addNewNews (newNews: NewsItem){
@@ -33,4 +32,6 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
             newsRepository.myNewsTableDao.delete_all() // This call happens on a background thread  Room thread
         }
     }
+
+
 }

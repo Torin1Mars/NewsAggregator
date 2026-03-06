@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,7 +16,6 @@ import com.example.newsagregatour.MyScreens.MainScreen
 import com.example.newsagregatour.ViewModels.MainViewModel
 import com.example.newsagregatour.ui.theme.NewsAgregatourTheme
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -26,20 +25,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        //Not triggers init block inside View model object
-        val mainViewModel : MainViewModel by viewModels()
-
         setContent {
             val mainNavHostController = rememberNavController()
             NewsAgregatourTheme {
-                AppNavigation(mainNavHostController, mainViewModel)
+                AppNavigation(mainNavHostController)
                 }
             }
         }
     }
 
 @Composable
-fun AppNavigation (navController: NavHostController,myMainViewModel: MainViewModel){
+fun AppNavigation (navController: NavHostController){
 
     NavHost(navController = navController,
         startDestination = Screens.GreetingsScreen.route) {
@@ -49,7 +45,7 @@ fun AppNavigation (navController: NavHostController,myMainViewModel: MainViewMod
         }
 
         composable(route = Screens.MainScreen.route){
-            MainScreen(navController, myMainViewModel)
+            MainScreen(navController)
         }
 
         composable(route = Screens.SplashScreen.route){

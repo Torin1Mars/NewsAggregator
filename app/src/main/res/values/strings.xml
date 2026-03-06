@@ -2,5 +2,6 @@
     <string name="app_name">NewsAggregator</string>
     <string name="previewImageDescr">Greetings</string>
 
-    <string name="App_MainScreen_Title">My News </string>
+    <string name="App_MainScreen_Title">NEWS </string>
+    <string name="SplashScreenBg">Background Image </string>
 </resources>
