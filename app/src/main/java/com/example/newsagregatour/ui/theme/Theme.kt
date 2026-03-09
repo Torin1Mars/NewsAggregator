@@ -2,14 +2,24 @@ package com.example.newsagregatour.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.lazy.layout.LazyLayoutScrollScope
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
+import my.nanihadesuka.compose.ScrollbarLayoutSide
+import my.nanihadesuka.compose.ScrollbarSelectionActionable
+import my.nanihadesuka.compose.ScrollbarSelectionMode
+import my.nanihadesuka.compose.ScrollbarSettings
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -55,3 +65,22 @@ fun NewsAgregatourTheme(
         content = content
     )
 }
+
+val ScrollThumbSettings = ScrollbarSettings(
+        enabled = true,
+        side = ScrollbarLayoutSide.End,
+        alwaysShowScrollbar = false,
+        thumbThickness = 6.dp,
+        scrollbarPadding = 10.dp,
+        thumbMinLength = 0.2f,
+        thumbMaxLength = 0.8f,
+        thumbUnselectedColor = Color.Green.copy(alpha = 0.6F),
+        thumbSelectedColor = Color.Black.copy(alpha = 0.8F),
+        thumbShape = CircleShape,
+        selectionMode = ScrollbarSelectionMode.Thumb,
+        selectionActionable = ScrollbarSelectionActionable.Always,
+        hideDelayMillis = 400,
+        hideDisplacement = 14.dp,
+        hideEasingAnimation = FastOutSlowInEasing,
+        durationAnimationMillis = 500,
+    )

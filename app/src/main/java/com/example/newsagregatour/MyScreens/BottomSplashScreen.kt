@@ -51,7 +51,6 @@ fun BottomSplashScreen(modifier: Modifier, hideBottomSplashScreen: ()-> Unit){
                     contentDescription = stringResource(R.string.SplashScreenBg))
 
                 Text(text =  "This is Example", fontSize = 20.sp)
-
             }
 
         }
