@@ -1,8 +1,7 @@
-package com.example.newsagregatour
-
+package com.example.newsagregatour.MyScreens
 
 enum class Screens (val route: String){
     GreetingsScreen("greetings"),
     MainScreen("main"),
-    SplashScreen("splash")
+    SingleNewsScreen("single")
 }

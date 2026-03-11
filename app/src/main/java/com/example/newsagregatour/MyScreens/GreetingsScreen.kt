@@ -23,7 +23,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
-import com.example.newsagregatour.Screens
+import com.example.newsagregatour.MyScreens.Screens
 import kotlinx.coroutines.delay
 
 @Composable

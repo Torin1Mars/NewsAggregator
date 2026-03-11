@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -13,10 +12,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.newsagregatour.MyScreens.GreetingScreen
 import com.example.newsagregatour.MyScreens.MainScreen
-import com.example.newsagregatour.ViewModels.MainViewModel
+import com.example.newsagregatour.MyScreens.Screens
 import com.example.newsagregatour.ui.theme.NewsAgregatourTheme
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -48,8 +46,8 @@ fun AppNavigation (navController: NavHostController){
             MainScreen(navController)
         }
 
-        composable(route = Screens.SplashScreen.route){
-            //SplashScreenLayout()
+        composable(route = Screens.SingleNewsScreen.route){
+            //SingleNewsScreen()
             }
         }
     }

@@ -8,8 +8,8 @@ import retrofit2.http.Query
 
 interface ApiService {
     //Basic Get Request
-    @GET("posts")
-    suspend fun getPosts(): Response<List<Post>>
+    @GET()
+    suspend fun getPosts(): Response<Post>
 
     // GET request with a dynamic path parameter
     @GET("posts/{id}")
