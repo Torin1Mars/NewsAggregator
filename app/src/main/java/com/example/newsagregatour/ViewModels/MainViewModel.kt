@@ -2,8 +2,6 @@ package com.example.newsagregatour.ViewModels
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsagregatour.Retrofit.RetrofitInstance
@@ -14,7 +12,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,21 +42,20 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
             val retrofit = RetrofitInstance
 
             try{
-                val response = retrofit.api.getPosts()
-                if(response.isSuccessful){
-                    val myData = response.body()
+                 val respond = retrofit.api.getLatestNews(apiKey ="pub_6584892198f241e5974c4ce66e37f9aa", query = "pizza", language = "en")
 
-                    Log.d("MyTag", myData.toString())
+                if(respond.isSuccessful){
+                    val myData = respond.body()?.results
+                    //TODO
+                    print("")
+
                 }else
-                    Log.d("MyTag", "Unsuccessful")
-
+                    print("")
+                    //TODO
 
             }catch (e: Exception){
-                Log.d("MyTag", "Exception ${e.message}")
+                //TODO
             }
         }
-
     }
-
-
 }

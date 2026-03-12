@@ -1,12 +1,12 @@
 package com.example.newsagregatour.Retrofit
 
-import com.example.newsagregatour.ApiData.tempLink
 import com.example.newsagregatour.ApiData.urlLink
+
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    private const val BASE_URL = tempLink
+    private const val BASE_URL = urlLink
 
     private val retrofit by lazy {
         Retrofit.Builder()
@@ -18,4 +18,5 @@ object RetrofitInstance {
     val api : ApiService by lazy {
         retrofit.create(ApiService::class.java)
     }
+
 }
