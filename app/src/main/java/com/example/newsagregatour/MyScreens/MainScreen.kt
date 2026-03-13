@@ -97,7 +97,7 @@ fun MainScreen(navHostController: NavHostController){
                 containerColor = (Color.Transparent),
 
                 topBar = {TopBar(modifier)},
-                bottomBar = {StaticBottomBar(modifier, {refreshDb()},  {showBottomSplashScreen()})} )
+                bottomBar = {StaticBottomBar(modifier, {mainViewModel.loadNewNews()},  {showBottomSplashScreen()})} )
             {
                 if (showBottomSplashScreen.value){
                     BottomSplashScreen(modifier, {hideBottomSplashScreen()})
@@ -110,7 +110,7 @@ fun MainScreen(navHostController: NavHostController){
                     TrendingNews(modifier, myNewsList)
 
                     //Main Field
-                    MainNewsList(modifier)
+                    MainNewsList(modifier, myNewsList)
                 }
             }
         }
@@ -163,7 +163,6 @@ fun StaticBottomBar(modifier: Modifier,
 fun ChoosenCategoryes(modifier: Modifier, myCategories : List<String>){
 
     val myCategories : List<String> = remember{myCategories.toMutableStateList()}
-
     val tempData = remember {mutableListOf<String>("Sport", "Politics", "Interesting", "Football")}
 
     fun generateRandomColor(): Color {
@@ -237,9 +236,9 @@ fun TrendingNews (modifier: Modifier, myTrendingNews: List<NewsItem>){
 }
 
 @Composable
-fun MainNewsList(modifier: Modifier, /*myNewsList: List<NewsItem>*/){
+fun MainNewsList(modifier: Modifier, myNewsList: List<NewsItem>){
     val listState = rememberLazyListState()
-    val myNewsList = remember {listOf("Example 1","Example 2", "Example 3").toMutableStateList() }
+    //val myNewsList = remember {listOf("Example 1","Example 2", "Example 3").toMutableStateList() }
 
     LazyColumnScrollbar(state = listState,
         settings = ScrollThumbSettings,
@@ -251,13 +250,14 @@ fun MainNewsList(modifier: Modifier, /*myNewsList: List<NewsItem>*/){
             state = listState,
             modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                items (count = myNewsList.size, /*key = {myNewsList[it].newsId}*/) {
+                items (count = myNewsList.size, key = {myNewsList[it].newsId}) {
+
                 Surface(modifier = modifier.fillMaxSize()
                     .height(300.dp),
                     shape = RoundedCornerShape(5.dp),
                     color = Color.White.copy(0.5F)) {
 
-                    Text(text = "This is Example", fontSize = 14.sp)
+                    Text(text = myNewsList[it].newsTitle, fontSize = 14.sp)
                     }
                 }
 

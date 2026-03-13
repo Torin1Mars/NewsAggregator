@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.newsagregatour.data.NewsItem
 import kotlinx.coroutines.flow.Flow
@@ -17,8 +18,10 @@ interface NewsTableDao {
         suspend fun insertNewNews(newsItem: NewsItem)
 
         @Insert
-        suspend fun insertAllNewsList(listNews: List<NewsItem>)
+        suspend fun insertNewsItem(newsItem: NewsItem)
 
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        suspend fun insertNewsList(newsList: List<NewsItem>)
 
         //Getting
         @Query("SELECT * FROM NewsTable WHERE newsId = :currentId")
@@ -36,4 +39,13 @@ interface NewsTableDao {
         suspend fun deleteOneNews(myNewsItem: NewsItem)
 
         @Query("DELETE FROM NewsTable")
-        fun delete_all(): Unit}
+        suspend fun clearEntireDB(): Unit
+
+        @Transaction
+        suspend fun replaceAllNews(newsItemList: List<NewsItem>){
+                clearEntireDB()
+
+                insertNewsList(newsItemList)
+        }
+}
+
