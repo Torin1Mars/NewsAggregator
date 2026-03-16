@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -50,6 +51,8 @@ import com.example.newsagregatour.R
 import com.example.newsagregatour.ViewModels.MainViewModel
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.room.util.TableInfo
+import coil3.compose.AsyncImage
 import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.ui.theme.ScrollThumbSettings
 import kotlin.random.Random
@@ -257,7 +260,19 @@ fun MainNewsList(modifier: Modifier, myNewsList: List<NewsItem>){
                     shape = RoundedCornerShape(5.dp),
                     color = Color.White.copy(0.5F)) {
 
-                    Text(text = myNewsList[it].newsTitle, fontSize = 14.sp)
+                    Column(modifier = modifier.fillMaxWidth()) {
+                        val previewUrl = myNewsList[it].newsBody.image_url
+                        AsyncImage(model = previewUrl,
+                            contentDescription = "${myNewsList[it].newsTitle} preview image",
+                            modifier = modifier.size(200.dp))
+
+                        Text(text = myNewsList[it].newsTitle, fontSize = 14.sp)
+
+                        }
+
+
+
+
                     }
                 }
 

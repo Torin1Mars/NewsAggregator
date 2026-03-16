@@ -1,11 +1,14 @@
 package com.example.newsagregatour.Retrofit
 
+import kotlinx.serialization.Serializable
+
 data class NewsResponse (
     val status : String,
     val totalResults: Int,
     val results: List<Article>
 )
 
+@Serializable
 data class Article(
     val title: String,
     val link: String,

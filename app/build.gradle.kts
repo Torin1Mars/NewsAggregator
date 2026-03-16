@@ -61,6 +61,11 @@ dependencies {
     val nav_version = "2.9.7"
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
+    //Coil
+    val coil_version = "3.3.0"
+    implementation("io.coil-kt.coil3:coil-compose:$coil_version")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:$coil_version")
+
     //Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
@@ -79,7 +84,6 @@ dependencies {
 
     implementation("androidx.compose.material3:material3:1.4.0")
     implementation("androidx.compose.material:material-icons-extended")
-    //implementation("androidx.compose.material3:material3")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 

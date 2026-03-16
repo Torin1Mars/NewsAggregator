@@ -1,14 +1,13 @@
 package com.example.newsagregatour.ViewModels
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil3.compose.AsyncImage
 import com.example.newsagregatour.Retrofit.Article
-import com.example.newsagregatour.Retrofit.RetrofitInstance
+import com.example.newsagregatour.Retrofit.RetrofitINewsItem
 import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.domain.DbRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.time.Duration
+
 
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context, private val newsRepository : DbRepository): ViewModel()
@@ -57,7 +56,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
     fun loadNewNews(){
         CoroutineScope(Dispatchers.IO).launch {
-            val retrofit = RetrofitInstance
+            val retrofit = RetrofitINewsItem
 
             try{
                 val respond = retrofit.api.getLatestNews(apiKey ="pub_6584892198f241e5974c4ce66e37f9aa", query = "pizza", language = "en")
@@ -83,9 +82,10 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         val myNewsNewsList = mutableStateListOf<NewsItem>()
 
         newsList.forEach {
-            it -> myNewsNewsList.add(NewsItem(newsTitle = it.title, newsBody = it.description!!))
-        }
 
+            it -> myNewsNewsList.add(NewsItem(newsTitle = it.title, newsBody = it)
+            )
+        }
         updateNewsList(myNewsNewsList)
     }
 }
