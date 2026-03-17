@@ -1,5 +1,8 @@
 package com.example.newsagregatour.MyScreens
 
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.PaintDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,10 +55,28 @@ import com.example.newsagregatour.R
 import com.example.newsagregatour.ViewModels.MainViewModel
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotApplyResult
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.room.util.TableInfo
+import coil3.ImageLoader
+import coil3.asDrawable
 import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
 import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.ui.theme.ScrollThumbSettings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.random.Random
 import my.nanihadesuka.compose.LazyColumnScrollbar
 
@@ -62,12 +84,10 @@ import my.nanihadesuka.compose.LazyColumnScrollbar
 @Composable
 fun MainScreen(navHostController: NavHostController){
     val modifier = Modifier
+    val context: Context = LocalContext.current
 
     //Not triggers init block inside View model object
     val mainViewModel : MainViewModel = hiltViewModel()
-
-    //data from view model
-    val myNewsList by mainViewModel.allNewsList.collectAsState(emptyList())
 
     var showBottomSplashScreen = remember { mutableStateOf<Boolean>(false) }
     val gradientColors = listOf(Color(0xFF4CAF50), Color(0xFF8BC34A), Color(0xFFCDDC39))
@@ -110,10 +130,10 @@ fun MainScreen(navHostController: NavHostController){
                     ChoosenCategoryes(modifier, emptyList())
 
                     //Trending in this category
-                    TrendingNews(modifier, myNewsList)
+                    TrendingNews(modifier, mainViewModel.allNewsList)
 
                     //Main Field
-                    MainNewsList(modifier, myNewsList)
+                    MainNewsList(modifier, context, mainViewModel.allNewsList)
                 }
             }
         }
@@ -161,7 +181,6 @@ fun StaticBottomBar(modifier: Modifier,
     }
 }
 
-
 @Composable
 fun ChoosenCategoryes(modifier: Modifier, myCategories : List<String>){
 
@@ -208,7 +227,9 @@ fun ChoosenCategoryes(modifier: Modifier, myCategories : List<String>){
 }
 
 @Composable
-fun TrendingNews (modifier: Modifier, myTrendingNews: List<NewsItem>){
+fun TrendingNews (modifier: Modifier, trendingNews: Flow<List<NewsItem>>){
+    val myTrendingNews by trendingNews.collectAsStateWithLifecycle(initialValue = emptyList<NewsItem>())
+
     LazyHorizontalGrid(modifier = modifier.padding(top = 15.dp)
         .padding(start = 20.dp)
         .fillMaxWidth()
@@ -239,44 +260,65 @@ fun TrendingNews (modifier: Modifier, myTrendingNews: List<NewsItem>){
 }
 
 @Composable
-fun MainNewsList(modifier: Modifier, myNewsList: List<NewsItem>){
+fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsItem>>){
+    val thisModifier = modifier
+    val thisContext = context
+
+    val myNews by newsList.collectAsStateWithLifecycle(initialValue = emptyList())
+
     val listState = rememberLazyListState()
-    //val myNewsList = remember {listOf("Example 1","Example 2", "Example 3").toMutableStateList() }
 
     LazyColumnScrollbar(state = listState,
         settings = ScrollThumbSettings,
-        modifier = modifier.fillMaxSize()
+        modifier = thisModifier.fillMaxSize()
             .padding(horizontal = 20.dp)
             .padding(top = 20.dp),
         ){
         LazyColumn(
             state = listState,
-            modifier = modifier.fillMaxSize(),
+            modifier = thisModifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                items (count = myNewsList.size, key = {myNewsList[it].newsId}) {
+                items (count = myNews.size, key = {myNews[it].newsId}) {
 
-                Surface(modifier = modifier.fillMaxSize()
-                    .height(300.dp),
+                Surface(modifier = thisModifier.fillMaxSize(),
                     shape = RoundedCornerShape(5.dp),
                     color = Color.White.copy(0.5F)) {
 
-                    Column(modifier = modifier.fillMaxWidth()) {
-                        val previewUrl = myNewsList[it].newsBody.image_url
-                        AsyncImage(model = previewUrl,
-                            contentDescription = "${myNewsList[it].newsTitle} preview image",
-                            modifier = modifier.size(200.dp))
+                    Column(modifier = thisModifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.SpaceAround,
+                        horizontalAlignment = Alignment.CenterHorizontally)
+                    {
+                        val previewUrl = myNews[it].newsBody.image_url
 
-                        Text(text = myNewsList[it].newsTitle, fontSize = 14.sp)
+                        if (previewUrl != null){
+                            AsyncImage(model = previewUrl,
+                                contentDescription = "${myNews[it].newsTitle} preview image",
+                                modifier = thisModifier.fillMaxWidth(),
+                                contentScale = ContentScale.FillWidth)
 
+                        }else{
+                            AsyncImage(model = R.drawable.temporaryimage,
+                                contentDescription = "${myNews[it].newsTitle} preview image",
+                                modifier = thisModifier.size(200.dp),
+                                contentScale = ContentScale.FillWidth)
                         }
 
+                        //Title
+                        @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+                        Text(text = myNews[it].newsTitle,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold)
 
-
-
+                        //Short Description
+                        @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+                        Text(text = myNews[it].newsBody.description!!,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Light)
+                        }
                     }
                 }
-
             }
         }
+
 }
 

@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import coil3.compose.AsyncImage
 import com.example.newsagregatour.Retrofit.Article
 import com.example.newsagregatour.Retrofit.RetrofitINewsItem
 import com.example.newsagregatour.data.NewsItem
@@ -16,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
 import javax.inject.Inject
 
 
@@ -23,17 +23,21 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context, private val newsRepository : DbRepository): ViewModel()
 {
     init {
-        loadNewNews()
+        //loadNewNews()
+        //clearDB()
     }
 
+    @ExperimentalSerializationApi
     val allNewsList = newsRepository.allNews
 
+    @ExperimentalSerializationApi
     fun addNewNews (newNews: NewsItem){
         viewModelScope.launch(Dispatchers.IO) {  // in ViewModel lifecycle
             newsRepository.insertNewNews(newNews) // This call happens on a background thread  Room thread
         }
     }
 
+    @ExperimentalSerializationApi
     fun updateNewsList(newsList: List<NewsItem>){
         viewModelScope.launch(Dispatchers.IO) {  // in ViewModel lifecycle
             newsRepository.refreshNewsList(newsList)
@@ -78,11 +82,11 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         }
     }
 
+    @ExperimentalSerializationApi
     fun addNewsToDb(newsList: List<Article>){
         val myNewsNewsList = mutableStateListOf<NewsItem>()
 
         newsList.forEach {
-
             it -> myNewsNewsList.add(NewsItem(newsTitle = it.title, newsBody = it)
             )
         }

@@ -1,10 +1,9 @@
 package com.example.newsagregatour.ui.theme
 
-import android.app.Activity
+
 import android.os.Build
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.lazy.layout.LazyLayoutScrollScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -14,7 +13,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import my.nanihadesuka.compose.ScrollbarLayoutSide
 import my.nanihadesuka.compose.ScrollbarSelectionActionable
@@ -71,11 +69,11 @@ val ScrollThumbSettings = ScrollbarSettings(
         side = ScrollbarLayoutSide.End,
         alwaysShowScrollbar = false,
         thumbThickness = 6.dp,
-        scrollbarPadding = 10.dp,
+        scrollbarPadding = 5.dp,
         thumbMinLength = 0.2f,
         thumbMaxLength = 0.8f,
-        thumbUnselectedColor = Color.Green.copy(alpha = 0.6F),
-        thumbSelectedColor = Color.Black.copy(alpha = 0.8F),
+        thumbUnselectedColor = Color.Gray.copy(alpha = 0.6F),
+        thumbSelectedColor = Color.DarkGray.copy(alpha = 0.8F),
         thumbShape = CircleShape,
         selectionMode = ScrollbarSelectionMode.Thumb,
         selectionActionable = ScrollbarSelectionActionable.Always,
