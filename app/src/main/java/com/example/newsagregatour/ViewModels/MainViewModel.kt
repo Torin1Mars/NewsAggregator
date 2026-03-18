@@ -1,12 +1,15 @@
 package com.example.newsagregatour.ViewModels
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsagregatour.Retrofit.Article
 import com.example.newsagregatour.Retrofit.RetrofitINewsItem
+import com.example.newsagregatour.SupportingData.standardNewsCategories
 import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.domain.DbRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
+import java.util.concurrent.Flow
 import javax.inject.Inject
 
 
@@ -23,6 +27,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context, private val newsRepository : DbRepository): ViewModel()
 {
     init {
+        Log.d("MyTag", "View model was created")
         //loadNewNews()
         //clearDB()
     }
@@ -92,4 +97,12 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         }
         updateNewsList(myNewsNewsList)
     }
+
+    // For Categories
+    val myCategories = standardNewsCategories.toMutableStateList()
+
+    fun addNewCategory(newCategory: String){
+        myCategories.add(newCategory)
+    }
+
 }

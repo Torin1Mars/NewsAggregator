@@ -1,10 +1,10 @@
 package com.example.newsagregatour.MyScreens
 
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.PaintDrawable
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,9 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.PlusOne
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -34,11 +36,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,28 +57,20 @@ import com.example.newsagregatour.R
 import com.example.newsagregatour.ViewModels.MainViewModel
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotApplyResult
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.painter.Painter
+
+import androidx.compose.ui.draw.clip
+
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.room.util.TableInfo
-import coil3.ImageLoader
-import coil3.asDrawable
+
 import coil3.compose.AsyncImage
-import coil3.compose.rememberAsyncImagePainter
-import coil3.request.ImageRequest
-import coil3.request.SuccessResult
+
 import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.ui.theme.ScrollThumbSettings
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
-import kotlinx.serialization.ExperimentalSerializationApi
+
 import kotlin.random.Random
 import my.nanihadesuka.compose.LazyColumnScrollbar
 
@@ -123,11 +117,11 @@ fun MainScreen(navHostController: NavHostController){
                 bottomBar = {StaticBottomBar(modifier, {mainViewModel.loadNewNews()},  {showBottomSplashScreen()})} )
             {
                 if (showBottomSplashScreen.value){
-                    BottomSplashScreen(modifier, {hideBottomSplashScreen()})
+                    BottomSplashScreen(modifier, {hideBottomSplashScreen()}, {mainViewModel.addNewCategory(String())})
                 }
                 Column (modifier = modifier.fillMaxSize()){
                     //Categories
-                    ChoosenCategoryes(modifier, emptyList())
+                    ChoosenCategoryes(modifier, mainViewModel.myCategories, {showBottomSplashScreen()})
 
                     //Trending in this category
                     TrendingNews(modifier, mainViewModel.allNewsList)
@@ -174,7 +168,7 @@ fun StaticBottomBar(modifier: Modifier,
                 contentDescription = "Refresh")
         }
 
-        IconButton(onClick = showBottomSplashScreen ){
+        IconButton(onClick = showBottomSplashScreen){
             Icon(imageVector = Icons.Default.Menu,
                 contentDescription = "Menu")
         }
@@ -182,10 +176,11 @@ fun StaticBottomBar(modifier: Modifier,
 }
 
 @Composable
-fun ChoosenCategoryes(modifier: Modifier, myCategories : List<String>){
+fun ChoosenCategoryes(modifier: Modifier, myCategories : List<String>, showBottomSplashScreen: () -> Unit){
 
-    val myCategories : List<String> = remember{myCategories.toMutableStateList()}
-    val tempData = remember {mutableListOf<String>("Sport", "Politics", "Interesting", "Football")}
+    val myCategories : MutableList<String> = remember{myCategories.toMutableStateList()}
+
+    //TODO add aditional plus button
 
     fun generateRandomColor(): Color {
         return Color(
@@ -198,12 +193,14 @@ fun ChoosenCategoryes(modifier: Modifier, myCategories : List<String>){
 
     fun getBgColors(): List<Color>{
         val myColors = mutableListOf<Color>()
-        tempData.forEach { myColors.add(generateRandomColor())}
 
+        myCategories.forEach { it ->
+                myColors.add(generateRandomColor())
+        }
         return myColors
     }
 
-    val bgButtonsColors = rememberSaveable { getBgColors()}
+    val bgButtonsColors = rememberSaveable {getBgColors()}
 
     LazyRow(modifier = Modifier.fillMaxWidth()
         .padding(top = 80.dp)
@@ -211,17 +208,35 @@ fun ChoosenCategoryes(modifier: Modifier, myCategories : List<String>){
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically)
     {
-        items(count = tempData.size, key = {tempData[it].lowercase()}  ) { it ->
-            FilledTonalButton(
-                modifier = modifier.padding(start = 10.dp),
-                onClick = {},
-                contentPadding = ButtonDefaults.TextButtonContentPadding,
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = bgButtonsColors[it])
-            )
-            {
-                Text(text = tempData[it].uppercase(), fontSize = 14.sp, color = Color.Black)
+        items(count = myCategories.size, key = {myCategories[it].lowercase()}  ) { it ->
+
+            //if not last button
+            if(it != myCategories.size-1){
+                FilledTonalButton(
+                    modifier = modifier.padding(start = 10.dp),
+                    onClick = {},
+                    contentPadding = ButtonDefaults.TextButtonContentPadding,
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = bgButtonsColors[it])
+                )
+                {
+                    Text(text = myCategories[it].uppercase(), fontSize = 14.sp, color = Color.Black)
+                }
             }
+            //Adding plus button last button
+            else{
+                FilledTonalButton(
+                    modifier = modifier.padding(start = 10.dp),
+                    onClick = showBottomSplashScreen,
+                    contentPadding = ButtonDefaults.TextButtonContentPadding,
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Green.copy(alpha = 0.8F))
+                )
+                {
+                    Image(Icons.Default.Add, stringResource(R.string.AddButton))
+                }
+            }
+
         }
     }
 }
@@ -264,61 +279,76 @@ fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsI
     val thisModifier = modifier
     val thisContext = context
 
+    @OptIn(kotlinx. serialization. ExperimentalSerializationApi::class)
     val myNews by newsList.collectAsStateWithLifecycle(initialValue = emptyList())
 
     val listState = rememberLazyListState()
 
-    LazyColumnScrollbar(state = listState,
-        settings = ScrollThumbSettings,
-        modifier = thisModifier.fillMaxSize()
-            .padding(horizontal = 20.dp)
-            .padding(top = 20.dp),
+    if (myNews.isNotEmpty()){
+        LazyColumnScrollbar(state = listState,
+            settings = ScrollThumbSettings,
+            modifier = thisModifier.fillMaxSize()
+                .padding(horizontal = 20.dp)
+                .padding(top = 20.dp),
         ){
-        LazyColumn(
-            state = listState,
-            modifier = thisModifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            LazyColumn(
+                state = listState,
+                modifier = thisModifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(20.dp)) {
                 items (count = myNews.size, key = {myNews[it].newsId}) {
 
-                Surface(modifier = thisModifier.fillMaxSize(),
-                    shape = RoundedCornerShape(5.dp),
-                    color = Color.White.copy(0.5F)) {
+                    Surface(modifier = thisModifier.fillMaxSize()
+                        .clickable {},//showInSingleScreen*/},
+                        shape = RoundedCornerShape(5.dp),
+                        color = Color.White.copy(0.5F)) {
 
-                    Column(modifier = thisModifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.SpaceAround,
-                        horizontalAlignment = Alignment.CenterHorizontally)
-                    {
-                        val previewUrl = myNews[it].newsBody.image_url
+                        Column(modifier = thisModifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.SpaceAround,
+                            horizontalAlignment = Alignment.CenterHorizontally)
+                        {
+                            val previewUrl = myNews[it].newsBody.image_url
 
-                        if (previewUrl != null){
-                            AsyncImage(model = previewUrl,
-                                contentDescription = "${myNews[it].newsTitle} preview image",
-                                modifier = thisModifier.fillMaxWidth(),
-                                contentScale = ContentScale.FillWidth)
+                            if (previewUrl != null){
+                                AsyncImage(model = previewUrl,
+                                    contentDescription = "${myNews[it].newsTitle} preview image",
+                                    modifier = thisModifier.fillMaxWidth()
+                                        .padding(5.dp)
+                                        .clip(RoundedCornerShape(5.dp)),
+                                    contentScale = ContentScale.FillWidth)
 
-                        }else{
-                            AsyncImage(model = R.drawable.temporaryimage,
-                                contentDescription = "${myNews[it].newsTitle} preview image",
-                                modifier = thisModifier.size(200.dp),
-                                contentScale = ContentScale.FillWidth)
-                        }
+                            }else{
+                                AsyncImage(model = R.drawable.temporaryimage,
+                                    contentDescription = "${myNews[it].newsTitle} preview image",
+                                    modifier = thisModifier.size(100.dp)
+                                        .padding(vertical = 20.dp),
+                                    alpha = 0.5F)
+                            }
 
-                        //Title
-                        @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
-                        Text(text = myNews[it].newsTitle,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold)
+                            //Title
+                            @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+                            Text(text = myNews[it].newsTitle,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold)
 
-                        //Short Description
-                        @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
-                        Text(text = myNews[it].newsBody.description!!,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Light)
+                            //Short Description
+                            @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+                            Text(text = myNews[it].newsBody.description!!,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Light)
                         }
                     }
                 }
             }
         }
+    }
+    else{
+        Box(modifier = thisModifier.fillMaxSize(),
+            contentAlignment = Alignment.Center){
+            Text(text = stringResource(R.string.UnavailableData),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Light)
+        }
 
+    }
 }
 

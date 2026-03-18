@@ -1,6 +1,7 @@
 package com.example.newsagregatour.MyScreens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,14 +27,14 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSplashScreen(modifier: Modifier, hideBottomSplashScreen: ()-> Unit){
+fun BottomSplashScreen(modifier: Modifier, hideBottomSplashScreen: ()-> Unit, addNewNewsCategory:(newCategory: String) -> Unit){
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8F),
         shape = RoundedCornerShape(topStart = 5.dp, topEnd = 5.dp),
 
         onDismissRequest = {scope.launch { sheetState.hide()}
@@ -50,7 +51,7 @@ fun BottomSplashScreen(modifier: Modifier, hideBottomSplashScreen: ()-> Unit){
                     painter = painterResource(R.drawable.globeicon),
                     contentDescription = stringResource(R.string.SplashScreenBg))
 
-                Text(text =  "This is Example", fontSize = 20.sp)
+                Text(text =  "This is Example", fontSize = 20.sp, modifier = modifier.clickable {addNewNewsCategory("Singing") })
             }
 
         }

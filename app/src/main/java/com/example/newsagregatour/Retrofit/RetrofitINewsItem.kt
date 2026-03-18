@@ -1,6 +1,6 @@
 package com.example.newsagregatour.Retrofit
 
-import com.example.newsagregatour.ApiData.urlLink
+import com.example.newsagregatour.SupportingData.urlLink
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

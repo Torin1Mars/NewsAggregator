@@ -5,4 +5,6 @@
     <string name="App_MainScreen_Title">NEWS </string>
     <string name="SplashScreenBg">Background Image </string>
     <string name="TempNews">Temporary Image </string>
+    <string name="UnavailableData">Sorry, current data is Unavailable …</string>
+    <string name="AddButton">Add new category</string>
 </resources>
