@@ -23,11 +23,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.newsagregatour.R
+import com.example.newsagregatour.ViewModels.MainViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSplashScreen(modifier: Modifier, hideBottomSplashScreen: ()-> Unit, addNewNewsCategory:(newCategory: String) -> Unit){
+fun BottomSplashScreen(modifier: Modifier, hideBottomSplashScreen:()-> Unit, myMainViewModel: MainViewModel){
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -38,7 +39,7 @@ fun BottomSplashScreen(modifier: Modifier, hideBottomSplashScreen: ()-> Unit, ad
         shape = RoundedCornerShape(topStart = 5.dp, topEnd = 5.dp),
 
         onDismissRequest = {scope.launch { sheetState.hide()}
-            .invokeOnCompletion {hideBottomSplashScreen()}},
+            .invokeOnCompletion {hideBottomSplashScreen()} },
 
         dragHandle = null,
         content = {
@@ -46,14 +47,13 @@ fun BottomSplashScreen(modifier: Modifier, hideBottomSplashScreen: ()-> Unit, ad
                 contentAlignment = Alignment.Center){
                 //Background Image
                 Image(modifier = modifier.fillMaxSize().size(150.dp),
-                    alpha = 0.4F,
+                    alpha = 0.2F,
                     contentScale = ContentScale.Inside,
                     painter = painterResource(R.drawable.globeicon),
                     contentDescription = stringResource(R.string.SplashScreenBg))
 
-                Text(text =  "This is Example", fontSize = 20.sp, modifier = modifier.clickable {addNewNewsCategory("Singing") })
+                Text(text =  "This is Example", fontSize = 20.sp, modifier = modifier.clickable {myMainViewModel.addNewCategory("OK")})
             }
-
         }
     )
 }

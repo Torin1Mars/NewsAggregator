@@ -103,6 +103,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
     fun addNewCategory(newCategory: String){
         myCategories.add(newCategory)
+        Log.d("MyTag", myCategories.toString())
     }
 
 }

@@ -1,10 +1,10 @@
 package com.example.newsagregatour.MyScreens
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,15 +18,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.PlusOne
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -41,7 +40,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -57,6 +55,7 @@ import com.example.newsagregatour.R
 import com.example.newsagregatour.ViewModels.MainViewModel
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
 import androidx.compose.ui.draw.clip
 
@@ -83,7 +82,7 @@ fun MainScreen(navHostController: NavHostController){
     //Not triggers init block inside View model object
     val mainViewModel : MainViewModel = hiltViewModel()
 
-    var showBottomSplashScreen = remember { mutableStateOf<Boolean>(false) }
+    var showBottomSplashScreen = remember {mutableStateOf<Boolean>(false)}
     val gradientColors = listOf(Color(0xFF4CAF50), Color(0xFF8BC34A), Color(0xFFCDDC39))
 
 
@@ -117,7 +116,7 @@ fun MainScreen(navHostController: NavHostController){
                 bottomBar = {StaticBottomBar(modifier, {mainViewModel.loadNewNews()},  {showBottomSplashScreen()})} )
             {
                 if (showBottomSplashScreen.value){
-                    BottomSplashScreen(modifier, {hideBottomSplashScreen()}, {mainViewModel.addNewCategory(String())})
+                    BottomSplashScreen(modifier, {hideBottomSplashScreen()}, mainViewModel)
                 }
                 Column (modifier = modifier.fillMaxSize()){
                     //Categories
@@ -133,6 +132,7 @@ fun MainScreen(navHostController: NavHostController){
         }
     }
 }
+
 
 @Composable
 fun TopBar(modifier: Modifier)
@@ -176,11 +176,14 @@ fun StaticBottomBar(modifier: Modifier,
 }
 
 @Composable
-fun ChoosenCategoryes(modifier: Modifier, myCategories : List<String>, showBottomSplashScreen: () -> Unit){
+fun ChoosenCategoryes(modifier: Modifier, categories : SnapshotStateList<String>, showBottomSplashScreen: () -> Unit)
+{
+    val myCategories  = categories
+    val scrollState = rememberScrollState()
 
-    val myCategories : MutableList<String> = remember{myCategories.toMutableStateList()}
+    val bgButtonsColors = rememberSaveable{mutableListOf<Color>()}
 
-    //TODO add aditional plus button
+    //TODO implement correct colors behaviour
 
     fun generateRandomColor(): Color {
         return Color(
@@ -191,52 +194,53 @@ fun ChoosenCategoryes(modifier: Modifier, myCategories : List<String>, showBotto
         )
     }
 
-    fun getBgColors(): List<Color>{
-        val myColors = mutableListOf<Color>()
-
-        myCategories.forEach { it ->
-                myColors.add(generateRandomColor())
+    if (bgButtonsColors.isNotEmpty()){
+        if (myCategories.size > bgButtonsColors.size){
+            do {
+                bgButtonsColors.add(generateRandomColor())
+            }while (myCategories.size == bgButtonsColors.size)
         }
-        return myColors
+        else if(myCategories.size < bgButtonsColors.size){
+            do {
+                bgButtonsColors.remove(bgButtonsColors.last())
+            }while (myCategories.size == bgButtonsColors.size)
+        }
+    }
+    // in first initialization
+    else{
+        myCategories.forEach { bgButtonsColors.add(generateRandomColor()) }
     }
 
-    val bgButtonsColors = rememberSaveable {getBgColors()}
-
-    LazyRow(modifier = Modifier.fillMaxWidth()
+    Row(modifier = Modifier.fillMaxWidth()
+        .horizontalScroll(scrollState)
         .padding(top = 80.dp)
         .padding(horizontal = 10.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically)
     {
-        items(count = myCategories.size, key = {myCategories[it].lowercase()}  ) { it ->
-
-            //if not last button
-            if(it != myCategories.size-1){
-                FilledTonalButton(
-                    modifier = modifier.padding(start = 10.dp),
-                    onClick = {},
-                    contentPadding = ButtonDefaults.TextButtonContentPadding,
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = bgButtonsColors[it])
-                )
-                {
-                    Text(text = myCategories[it].uppercase(), fontSize = 14.sp, color = Color.Black)
-                }
+        myCategories.forEach { instance ->
+            FilledTonalButton(
+                modifier = modifier.padding(start = 10.dp),
+                onClick = {},
+                contentPadding = ButtonDefaults.TextButtonContentPadding,
+                shape = RoundedCornerShape(10.dp),
+                //colors = ButtonDefaults.buttonColors(containerColor = bgButtonsColors[myCategories.indexOf(instance)])
+            )
+            {
+                Text(text = instance.uppercase(), fontSize = 14.sp, color = Color.Black)
             }
-            //Adding plus button last button
-            else{
-                FilledTonalButton(
-                    modifier = modifier.padding(start = 10.dp),
-                    onClick = showBottomSplashScreen,
-                    contentPadding = ButtonDefaults.TextButtonContentPadding,
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Green.copy(alpha = 0.8F))
-                )
-                {
-                    Image(Icons.Default.Add, stringResource(R.string.AddButton))
-                }
-            }
+        }
 
+        // Last add button
+        FilledTonalButton(
+            modifier = modifier.padding(start = 10.dp),
+            onClick = showBottomSplashScreen,
+            contentPadding = ButtonDefaults.TextButtonContentPadding,
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Green.copy(alpha = 0.8F))
+        )
+        {
+            Image(Icons.Default.Add, stringResource(R.string.AddButton))
         }
     }
 }
@@ -348,7 +352,7 @@ fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsI
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Light)
         }
-
     }
 }
+
 
