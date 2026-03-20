@@ -5,10 +5,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsagregatour.Retrofit.Article
 import com.example.newsagregatour.Retrofit.RetrofitINewsItem
+import com.example.newsagregatour.SupportingData.API_KEY
 import com.example.newsagregatour.SupportingData.standardNewsCategories
 import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.domain.DbRepository
@@ -27,7 +29,6 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context, private val newsRepository : DbRepository): ViewModel()
 {
     init {
-        Log.d("MyTag", "View model was created")
         //loadNewNews()
         //clearDB()
     }
@@ -69,6 +70,30 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
             try{
                 val respond = retrofit.api.getLatestNews(apiKey ="pub_6584892198f241e5974c4ce66e37f9aa", query = "pizza", language = "en")
+
+                if(respond.isSuccessful){
+                    val myData = respond.body()?.results
+                    if (!myData.isNullOrEmpty())
+                        addNewsToDb(myData)
+                    else{
+                        //Do nothing
+                    }
+
+                }else
+                    makeToast("Couldn't refresh news, try again later")
+
+            }catch (e: Exception){
+                makeToast("Couldn't refresh news, check your connection")
+            }
+        }
+    }
+
+    fun loadNewCategory(category: String){
+        CoroutineScope(Dispatchers.IO).launch {
+            val retrofit = RetrofitINewsItem
+
+            try{
+                val respond = retrofit.api.getLatestNews(apiKey = API_KEY, query = category.lowercase(), language = "en")
 
                 if(respond.isSuccessful){
                     val myData = respond.body()?.results

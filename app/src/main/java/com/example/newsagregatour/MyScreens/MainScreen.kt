@@ -1,6 +1,8 @@
 package com.example.newsagregatour.MyScreens
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -74,6 +76,7 @@ import kotlin.random.Random
 import my.nanihadesuka.compose.LazyColumnScrollbar
 
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun MainScreen(navHostController: NavHostController){
     val modifier = Modifier
@@ -116,11 +119,11 @@ fun MainScreen(navHostController: NavHostController){
                 bottomBar = {StaticBottomBar(modifier, {mainViewModel.loadNewNews()},  {showBottomSplashScreen()})} )
             {
                 if (showBottomSplashScreen.value){
-                    BottomSplashScreen(modifier, {hideBottomSplashScreen()}, mainViewModel)
+                    BottomSplashScreen(context, modifier, {hideBottomSplashScreen()}, mainViewModel)
                 }
                 Column (modifier = modifier.fillMaxSize()){
                     //Categories
-                    ChoosenCategoryes(modifier, mainViewModel.myCategories, {showBottomSplashScreen()})
+                    ChoosenCategoryes(modifier, mainViewModel, {showBottomSplashScreen()})
 
                     //Trending in this category
                     TrendingNews(modifier, mainViewModel.allNewsList)
@@ -176,14 +179,10 @@ fun StaticBottomBar(modifier: Modifier,
 }
 
 @Composable
-fun ChoosenCategoryes(modifier: Modifier, categories : SnapshotStateList<String>, showBottomSplashScreen: () -> Unit)
+fun ChoosenCategoryes(modifier: Modifier, viewModel: MainViewModel, showBottomSplashScreen: () -> Unit)
 {
-    val myCategories  = categories
+    val myCategories  = viewModel.myCategories
     val scrollState = rememberScrollState()
-
-    val bgButtonsColors = rememberSaveable{mutableListOf<Color>()}
-
-    //TODO implement correct colors behaviour
 
     fun generateRandomColor(): Color {
         return Color(
@@ -194,23 +193,6 @@ fun ChoosenCategoryes(modifier: Modifier, categories : SnapshotStateList<String>
         )
     }
 
-    if (bgButtonsColors.isNotEmpty()){
-        if (myCategories.size > bgButtonsColors.size){
-            do {
-                bgButtonsColors.add(generateRandomColor())
-            }while (myCategories.size == bgButtonsColors.size)
-        }
-        else if(myCategories.size < bgButtonsColors.size){
-            do {
-                bgButtonsColors.remove(bgButtonsColors.last())
-            }while (myCategories.size == bgButtonsColors.size)
-        }
-    }
-    // in first initialization
-    else{
-        myCategories.forEach { bgButtonsColors.add(generateRandomColor()) }
-    }
-
     Row(modifier = Modifier.fillMaxWidth()
         .horizontalScroll(scrollState)
         .padding(top = 80.dp)
@@ -218,20 +200,7 @@ fun ChoosenCategoryes(modifier: Modifier, categories : SnapshotStateList<String>
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically)
     {
-        myCategories.forEach { instance ->
-            FilledTonalButton(
-                modifier = modifier.padding(start = 10.dp),
-                onClick = {},
-                contentPadding = ButtonDefaults.TextButtonContentPadding,
-                shape = RoundedCornerShape(10.dp),
-                //colors = ButtonDefaults.buttonColors(containerColor = bgButtonsColors[myCategories.indexOf(instance)])
-            )
-            {
-                Text(text = instance.uppercase(), fontSize = 14.sp, color = Color.Black)
-            }
-        }
-
-        // Last add button
+        // First add button
         FilledTonalButton(
             modifier = modifier.padding(start = 10.dp),
             onClick = showBottomSplashScreen,
@@ -241,6 +210,19 @@ fun ChoosenCategoryes(modifier: Modifier, categories : SnapshotStateList<String>
         )
         {
             Image(Icons.Default.Add, stringResource(R.string.AddButton))
+        }
+
+        myCategories.forEach { instance ->
+            FilledTonalButton(
+                modifier = modifier.padding(start = 10.dp),
+                onClick = {viewModel.loadNewCategory(instance)},
+                contentPadding = ButtonDefaults.TextButtonContentPadding,
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = remember {generateRandomColor()} )
+            )
+            {
+                Text(text = instance.uppercase(), fontSize = 14.sp, color = Color.Black)
+            }
         }
     }
 }

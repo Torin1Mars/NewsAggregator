@@ -1,12 +1,12 @@
 package com.example.newsagregatour.Retrofit
 
-import com.example.newsagregatour.SupportingData.urlLink
+import com.example.newsagregatour.SupportingData.URL_Link
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitINewsItem {
-    private const val BASE_URL = urlLink
+    private const val BASE_URL = URL_Link
 
     private val retrofit by lazy {
         Retrofit.Builder()
