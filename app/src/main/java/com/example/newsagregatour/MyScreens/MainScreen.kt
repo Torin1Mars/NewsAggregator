@@ -33,6 +33,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
@@ -71,9 +72,12 @@ import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.ui.theme.ScrollThumbSettings
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.count
 
 import kotlin.random.Random
 import my.nanihadesuka.compose.LazyColumnScrollbar
+import org.intellij.lang.annotations.JdkConstants
 
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
@@ -124,6 +128,8 @@ fun MainScreen(navHostController: NavHostController){
                 Column (modifier = modifier.fillMaxSize()){
                     //Categories
                     ChoosenCategoryes(modifier, mainViewModel, {showBottomSplashScreen()})
+
+                    CategoriesStatusBar(modifier, mainViewModel.currentCategory.value, mainViewModel.newsCount)
 
                     //Trending in this category
                     TrendingNews(modifier, mainViewModel.allNewsList)
@@ -224,6 +230,24 @@ fun ChoosenCategoryes(modifier: Modifier, viewModel: MainViewModel, showBottomSp
                 Text(text = instance.uppercase(), fontSize = 14.sp, color = Color.Black)
             }
         }
+    }
+}
+
+@Composable
+fun CategoriesStatusBar(modifier: Modifier, currentCategory: String, newsListCount: Int){
+
+    Row(modifier = modifier.fillMaxWidth().padding(vertical = 15.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically)
+    {
+
+        Text(text = stringResource(R.string.CurrentCategory) + " :" + currentCategory,
+            modifier = modifier,
+            fontSize = 16.sp)
+
+        Text(text = stringResource(R.string.NewsCount) + " :" + newsListCount,
+            modifier = modifier,
+            fontSize = 16.sp)
     }
 }
 
@@ -336,5 +360,7 @@ fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsI
         }
     }
 }
+
+
 
 

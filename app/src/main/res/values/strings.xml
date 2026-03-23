@@ -7,4 +7,6 @@
     <string name="TempNews">Temporary Image </string>
     <string name="UnavailableData">Sorry, current data is Unavailable …</string>
     <string name="AddButton">Add new category</string>
+    <string name="CurrentCategory">Chosen Category</string>
+    <string name="NewsCount">News in list</string>
 </resources>
