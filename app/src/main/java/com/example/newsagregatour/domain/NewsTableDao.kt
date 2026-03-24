@@ -30,6 +30,9 @@ interface NewsTableDao {
         @Query("SELECT * FROM NewsTable")
         fun getAllNews(): Flow<List<NewsItem>>
 
+        @Query("SELECT * FROM NewsTable")
+        suspend fun getAllNewsList(): List<NewsItem>
+
         //Updating
         @Update()
         suspend fun updateNewsItem(newsItem: NewsItem)

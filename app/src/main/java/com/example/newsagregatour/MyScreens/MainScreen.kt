@@ -2,6 +2,7 @@ package com.example.newsagregatour.MyScreens
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -67,6 +68,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import coil3.compose.AsyncImage
+import com.example.newsagregatour.Retrofit.Article
 
 import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.ui.theme.ScrollThumbSettings
@@ -99,11 +101,6 @@ fun MainScreen(navHostController: NavHostController){
 
     fun hideBottomSplashScreen(){
         showBottomSplashScreen.value = false
-    }
-
-    fun refreshDb (/*NewSearchingInput: Map<String, List<String>>*/): Unit{
-        //TODO
-
     }
 
     Box(
@@ -218,6 +215,8 @@ fun ChoosenCategoryes(modifier: Modifier, viewModel: MainViewModel, showBottomSp
             Image(Icons.Default.Add, stringResource(R.string.AddButton))
         }
 
+        val currentCategory = viewModel.currentCategory
+
         myCategories.forEach { instance ->
             FilledTonalButton(
                 modifier = modifier.padding(start = 10.dp),
@@ -227,7 +226,9 @@ fun ChoosenCategoryes(modifier: Modifier, viewModel: MainViewModel, showBottomSp
                 colors = ButtonDefaults.buttonColors(containerColor = remember {generateRandomColor()} )
             )
             {
-                Text(text = instance.uppercase(), fontSize = 14.sp, color = Color.Black)
+                Text(text = instance.uppercase(), fontSize = 14.sp, color = Color.Black,
+                    fontWeight = if (instance.lowercase() == currentCategory.value.lowercase()){
+                        FontWeight.Bold} else {FontWeight.Light})
             }
         }
     }
@@ -241,9 +242,16 @@ fun CategoriesStatusBar(modifier: Modifier, currentCategory: String, newsListCou
         verticalAlignment = Alignment.CenterVertically)
     {
 
-        Text(text = stringResource(R.string.CurrentCategory) + " :" + currentCategory,
-            modifier = modifier,
-            fontSize = 16.sp)
+        Column {
+            Text(text = stringResource(R.string.CurrentCategory)+ " :",
+                modifier = modifier,
+                fontSize = 16.sp)
+
+            Text(text = currentCategory,
+                modifier = modifier,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold)
+        }
 
         Text(text = stringResource(R.string.NewsCount) + " :" + newsListCount,
             modifier = modifier,
@@ -252,8 +260,9 @@ fun CategoriesStatusBar(modifier: Modifier, currentCategory: String, newsListCou
 }
 
 @Composable
-fun TrendingNews (modifier: Modifier, trendingNews: Flow<List<NewsItem>>){
-    val myTrendingNews by trendingNews.collectAsStateWithLifecycle(initialValue = emptyList<NewsItem>())
+fun TrendingNews (modifier: Modifier, newsData: Flow<List<NewsItem>>, goSingleScreen:(Article)-> Unit){
+    //TODO add go to single screen transfer
+    val myNewsData by newsData.collectAsStateWithLifecycle(initialValue = emptyList<NewsItem>())
 
     LazyHorizontalGrid(modifier = modifier.padding(top = 15.dp)
         .padding(start = 20.dp)
@@ -261,11 +270,21 @@ fun TrendingNews (modifier: Modifier, trendingNews: Flow<List<NewsItem>>){
         .fillMaxHeight(0.2F),
         userScrollEnabled = true,
         rows = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy (5.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalArrangement = Arrangement.spacedBy(5.dp))
     {
-        items (count = myTrendingNews.size, key =  {myTrendingNews[it].newsId}){
-            Surface (modifier = modifier, shape = RoundedCornerShape(5.dp),
+        items (count = myNewsData.size, key =  {myNewsData[it].newsId}) {
+
+            AsyncImage(
+                model = myNewsData[it].newsBody.image_url,
+                contentDescription = "${myNewsData[it].newsTitle} preview image",
+                contentScale = ContentScale.Fit,
+                modifier = modifier.clickable {Log.d("MyTag", myNewsData[it].newsTitle)}
+                    .fillMaxWidth()
+                    .padding(5.dp)
+                    .clip(RoundedCornerShape(5.dp))
+            )
+            /*Surface (modifier = modifier, shape = RoundedCornerShape(5.dp),
                 color = Color.White.copy(alpha = 0.5F)){
 
                 Row(modifier = modifier,
@@ -279,7 +298,7 @@ fun TrendingNews (modifier: Modifier, trendingNews: Flow<List<NewsItem>>){
                             text = "Example",
                         fontSize = 12.sp)
                 }
-            }
+            }*/
         }
     }
 }

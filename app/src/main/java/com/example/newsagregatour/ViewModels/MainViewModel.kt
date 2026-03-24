@@ -1,7 +1,6 @@
 package com.example.newsagregatour.ViewModels
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -20,10 +19,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toCollection
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -36,13 +31,21 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         //loadNewNews()
         //clearDB()
 
+        initialNewsSize()
     }
 
     @ExperimentalSerializationApi
     val allNewsList = newsRepository.allNews
 
+    // For Categories
+    val myCategories = standardNewsCategories.toMutableStateList()
     val currentCategory = mutableStateOf(DEFAULT_NEWS_CATEGORY)
-    var newsCount by mutableStateOf(0)
+
+    var newsCount by mutableStateOf<Int>(0)
+
+    private fun initialNewsSize(){
+        viewModelScope.launch { newsCount  = newsRepository.getNewsCount()}
+    }
 
     @ExperimentalSerializationApi
     fun addNewNews (newNews: NewsItem){
@@ -84,9 +87,7 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
                         addNewsToDb(myData);
 
                         newsCount = myData.size
-
                     }
-
                     else{
                         //Do nothing
                     }
@@ -103,31 +104,6 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun loadNewCategory(category: String){
         currentCategory.value = category
         loadNewNews()
-
-        /*
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val retrofit = RetrofitINewsItem
-
-            try{
-                val respond = retrofit.api.getLatestNews(apiKey = API_KEY, query = category.lowercase(), language = "en")
-
-                if(respond.isSuccessful){
-                    val myData = respond.body()?.results
-                    if (!myData.isNullOrEmpty()){
-                        addNewsToDb(myData);
-                    }
-                    else{
-                        //Do nothing
-                    }
-
-                }else
-                    makeToast("Couldn't refresh news, try again later")
-
-            }catch (e: Exception){
-                makeToast("Couldn't refresh news, check your connection")
-            }
-        }*/
     }
 
     @ExperimentalSerializationApi
@@ -140,9 +116,6 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
         }
         updateNewsList(myNewsNewsList)
     }
-
-    // For Categories
-    val myCategories = standardNewsCategories.toMutableStateList()
 
     fun addNewCategory(newCategory: String){
         myCategories.add(newCategory)
