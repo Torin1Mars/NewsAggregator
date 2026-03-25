@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.newsagregatour.MyScreens.GreetingScreen
 import com.example.newsagregatour.MyScreens.MainScreen
 import com.example.newsagregatour.MyScreens.Screens
+import com.example.newsagregatour.MyScreens.SingleNewsScreen
 import com.example.newsagregatour.ui.theme.NewsAgregatourTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,8 +51,11 @@ fun AppNavigation (navController: NavHostController){
             MainScreen(navController)
         }
 
-        composable(route = Screens.SingleNewsScreen.route){
-            //SingleNewsScreen()
+        composable(route = Screens.SingleNewsScreen.route + "/" + "{Id}" ){
+            backStackEntry->
+            val newsId = backStackEntry.arguments?.getString("Id")
+
+            SingleNewsScreen(navController, newsId!!)
             }
         }
     }

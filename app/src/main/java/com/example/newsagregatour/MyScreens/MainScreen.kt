@@ -66,6 +66,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 
 import coil3.compose.AsyncImage
 import com.example.newsagregatour.Retrofit.Article
@@ -129,7 +130,7 @@ fun MainScreen(navHostController: NavHostController){
                     CategoriesStatusBar(modifier, mainViewModel.currentCategory.value, mainViewModel.newsCount)
 
                     //Trending in this category
-                    TrendingNews(modifier, mainViewModel.allNewsList)
+                    TrendingNews(modifier, mainViewModel.allNewsList, navHostController)
 
                     //Main Field
                     MainNewsList(modifier, context, mainViewModel.allNewsList)
@@ -260,8 +261,12 @@ fun CategoriesStatusBar(modifier: Modifier, currentCategory: String, newsListCou
 }
 
 @Composable
-fun TrendingNews (modifier: Modifier, newsData: Flow<List<NewsItem>>, goSingleScreen:(Article)-> Unit){
-    //TODO add go to single screen transfer
+fun TrendingNews (modifier: Modifier, newsData: Flow<List<NewsItem>>, navController: NavController){
+
+    fun goToSingleArticleScreen(newsItemId: Int){
+        navController.navigate(Screens.SingleNewsScreen.route + "/" + newsItemId.toString())
+    }
+
     val myNewsData by newsData.collectAsStateWithLifecycle(initialValue = emptyList<NewsItem>())
 
     LazyHorizontalGrid(modifier = modifier.padding(top = 15.dp)
@@ -279,7 +284,7 @@ fun TrendingNews (modifier: Modifier, newsData: Flow<List<NewsItem>>, goSingleSc
                 model = myNewsData[it].newsBody.image_url,
                 contentDescription = "${myNewsData[it].newsTitle} preview image",
                 contentScale = ContentScale.Fit,
-                modifier = modifier.clickable {Log.d("MyTag", myNewsData[it].newsTitle)}
+                modifier = modifier.clickable {goToSingleArticleScreen(myNewsData[it].newsId)}
                     .fillMaxWidth()
                     .padding(5.dp)
                     .clip(RoundedCornerShape(5.dp))
@@ -337,7 +342,7 @@ fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsI
                         {
                             val previewUrl = myNews[it].newsBody.image_url
 
-                            if (previewUrl != null){
+                            if (!previewUrl.isNullOrEmpty()){
                                 AsyncImage(model = previewUrl,
                                     contentDescription = "${myNews[it].newsTitle} preview image",
                                     modifier = thisModifier.fillMaxWidth()
@@ -360,10 +365,12 @@ fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsI
                                 fontWeight = FontWeight.Bold)
 
                             //Short Description
-                            @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
-                            Text(text = myNews[it].newsBody.description!!,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Light)
+                            if (!myNews[it].newsBody.description.isNullOrEmpty()){
+                                @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+                                Text(text = myNews[it].newsBody.description!!,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Light)
+                            }
                         }
                     }
                 }

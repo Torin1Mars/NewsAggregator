@@ -12,7 +12,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -23,7 +22,6 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
-import com.example.newsagregatour.MyScreens.Screens
 import kotlinx.coroutines.delay
 
 @Composable
@@ -34,14 +32,13 @@ fun GreetingScreen(navHostController:NavHostController) {
     val scaleRatio by animateFloatAsState (
         targetValue = if (startAnimation) 360f else 0f, animationSpec = spring(
             dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessVeryLow
-        ), label = "alphaAnimation")
-
+        ), label = "scaleAnimation")
 
 
     val rotationAngle by animateFloatAsState (
         targetValue = if (startAnimation) 360f else 0f, animationSpec = spring(
         dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessVeryLow
-        ), label = "alphaAnimation")
+        ), label = "rotationAnimation")
 
     // LaunchedEffect to trigger the animation
     LaunchedEffect(Unit) {
@@ -52,11 +49,19 @@ fun GreetingScreen(navHostController:NavHostController) {
     // LaunchedEffect to trigger the appearing main screen
     LaunchedEffect(Unit) {
         delay(4000) // Delay before the animation starts
-        navHostController.navigate(Screens.MainScreen.route)
+        navHostController.navigate(Screens.MainScreen.route) {
+            popUpTo(navHostController.graph.id){
+                inclusive = true
+            }
+        }
     }
 
     fun restartThisScreen():Unit{
-        navHostController.navigate(Screens.GreetingsScreen.route)
+        navHostController.navigate(Screens.GreetingsScreen.route){
+            popUpTo(navHostController.graph.id){
+                inclusive = true
+            }
+        }
     }
 
    Box(
