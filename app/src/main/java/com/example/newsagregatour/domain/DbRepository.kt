@@ -27,6 +27,12 @@ class DbRepository @Inject constructor(private val newsTableDao: NewsTableDao) {
         return count
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend fun getNewsById(newsId: Int): NewsItem?{
+        val newsItem: NewsItem? = newsTableDao.getNewsById(newsId)
+        return newsItem
+    }
+
     @ExperimentalSerializationApi
     suspend fun insertNewNews (newNews : NewsItem){
             newsTableDao.insertNewNews(newNews)

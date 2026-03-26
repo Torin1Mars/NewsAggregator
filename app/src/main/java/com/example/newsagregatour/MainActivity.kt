@@ -55,7 +55,7 @@ fun AppNavigation (navController: NavHostController){
             backStackEntry->
             val newsId = backStackEntry.arguments?.getString("Id")
 
-            SingleNewsScreen(navController, newsId!!)
+            SingleNewsScreen(newsId!!)
             }
         }
     }

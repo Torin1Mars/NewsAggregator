@@ -1,6 +1,7 @@
 package com.example.newsagregatour.ViewModels
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -45,6 +46,13 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
 
     private fun initialNewsSize(){
         viewModelScope.launch { newsCount  = newsRepository.getNewsCount()}
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend fun getNewsById(newsId : Int): NewsItem? {
+        var newsItem: NewsItem? = null
+        newsItem = newsRepository.getNewsById(newsId)
+        return newsItem
     }
 
     @ExperimentalSerializationApi
