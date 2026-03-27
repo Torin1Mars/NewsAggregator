@@ -11,6 +11,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -82,3 +83,12 @@ val ScrollThumbSettings = ScrollbarSettings(
         hideEasingAnimation = FastOutSlowInEasing,
         durationAnimationMillis = 500,
     )
+
+private val mainScreenGradientColors = listOf(Color(0xFF4CAF50), Color(0xFF8BC34A), Color(0xFFCDDC39))
+val mainScreenBrush = Brush.verticalGradient(colors = mainScreenGradientColors)
+
+private val singleScreenGradientColors = listOf(Color.Green, Color.Green.copy(alpha = 0.5f), Color.Transparent)
+val singleScreenBrush = Brush.verticalGradient(colors = singleScreenGradientColors)
+
+
+

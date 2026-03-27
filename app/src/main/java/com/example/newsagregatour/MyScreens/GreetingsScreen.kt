@@ -78,7 +78,7 @@ fun GreetingScreen(navHostController:NavHostController) {
                     scaleIn(animationSpec = tween(durationMillis = 1000)),
         ) {
             Image(painter = painterResource(R.drawable.newsicon),
-                contentDescription = stringResource(R.string.previewImageDescr),
+                contentDescription = stringResource(R.string.StartingPreviewImageDescr),
                 modifier = modifier.rotate(rotationAngle))
         }
     }

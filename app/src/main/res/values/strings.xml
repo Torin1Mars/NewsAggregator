@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">NewsAggregator</string>
-    <string name="previewImageDescr">Greetings</string>
+    <string name="StartingPreviewImageDescr">Greetings</string>
 
     <string name="App_MainScreen_Title">NEWS </string>
     <string name="SplashScreenBg">Background Image </string>
@@ -9,4 +9,5 @@
     <string name="AddButton">Add new category</string>
     <string name="CurrentCategory">Chosen Category</string>
     <string name="NewsCount">News in list</string>
+    <string name="PreviewImg">Preview is unavailable</string>
 </resources>

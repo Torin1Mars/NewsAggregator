@@ -2,7 +2,6 @@ package com.example.newsagregatour.MyScreens
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,7 +33,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
@@ -58,8 +56,6 @@ import androidx.navigation.NavHostController
 import com.example.newsagregatour.R
 import com.example.newsagregatour.ViewModels.MainViewModel
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 
 import androidx.compose.ui.draw.clip
 
@@ -69,18 +65,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 
 import coil3.compose.AsyncImage
-import com.example.newsagregatour.Retrofit.Article
 
 import com.example.newsagregatour.data.NewsItem
 import com.example.newsagregatour.ui.theme.ScrollThumbSettings
+import com.example.newsagregatour.ui.theme.mainScreenBrush
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.count
 
 import kotlin.random.Random
 import my.nanihadesuka.compose.LazyColumnScrollbar
-import org.intellij.lang.annotations.JdkConstants
 
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
@@ -89,12 +82,9 @@ fun MainScreen(navHostController: NavHostController){
     val modifier = Modifier
     val context: Context = LocalContext.current
 
-    //Not triggers init block inside View model object
     val mainViewModel : MainViewModel = hiltViewModel()
 
     var showBottomSplashScreen = remember {mutableStateOf<Boolean>(false)}
-    val gradientColors = listOf(Color(0xFF4CAF50), Color(0xFF8BC34A), Color(0xFFCDDC39))
-
 
     fun showBottomSplashScreen(){
         showBottomSplashScreen.value = true
@@ -106,9 +96,8 @@ fun MainScreen(navHostController: NavHostController){
 
     Box(
         modifier = modifier.fillMaxSize()
-            .background(Brush.verticalGradient(colors = gradientColors))
+            .background(brush = mainScreenBrush)
     ){
-
         Surface(modifier = modifier.fillMaxSize()
             .padding(10.dp),
             color = Color.White.copy(alpha = 0.5f),
@@ -133,7 +122,7 @@ fun MainScreen(navHostController: NavHostController){
                     TrendingNews(modifier, mainViewModel.allNewsList, navHostController)
 
                     //Main Field
-                    MainNewsList(modifier, context, mainViewModel.allNewsList)
+                    MainNewsList(modifier, context, mainViewModel.allNewsList, navHostController)
                 }
             }
         }
@@ -289,27 +278,12 @@ fun TrendingNews (modifier: Modifier, newsData: Flow<List<NewsItem>>, navControl
                     .padding(5.dp)
                     .clip(RoundedCornerShape(5.dp))
             )
-            /*Surface (modifier = modifier, shape = RoundedCornerShape(5.dp),
-                color = Color.White.copy(alpha = 0.5F)){
-
-                Row(modifier = modifier,
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically) {
-
-                    Image(painterResource(R.drawable.temporarynews),
-                        contentDescription = stringResource(R.string.TempNews))
-
-                    Text(modifier = modifier.padding(start = 12.dp),
-                            text = "Example",
-                        fontSize = 12.sp)
-                }
-            }*/
         }
     }
 }
 
 @Composable
-fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsItem>>){
+fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsItem>>, navController: NavController){
     val thisModifier = modifier
     val thisContext = context
 
@@ -317,6 +291,10 @@ fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsI
     val myNews by newsList.collectAsStateWithLifecycle(initialValue = emptyList())
 
     val listState = rememberLazyListState()
+
+    fun goToSingleArticleScreen(newsItemId: Int){
+        navController.navigate(Screens.SingleNewsScreen.route + "/" + newsItemId.toString())
+    }
 
     if (myNews.isNotEmpty()){
         LazyColumnScrollbar(state = listState,
@@ -329,10 +307,10 @@ fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsI
                 state = listState,
                 modifier = thisModifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                items (count = myNews.size, key = {myNews[it].newsId}) {
+                items (count = myNews.size, key = {myNews[it].newsId}) {it->
 
                     Surface(modifier = thisModifier.fillMaxSize()
-                        .clickable {},//showInSingleScreen*/},
+                        .clickable {goToSingleArticleScreen(myNews[it].newsId)},
                         shape = RoundedCornerShape(5.dp),
                         color = Color.White.copy(0.5F)) {
 
@@ -377,6 +355,7 @@ fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsI
             }
         }
     }
+
     else{
         Box(modifier = thisModifier.fillMaxSize(),
             contentAlignment = Alignment.Center){
