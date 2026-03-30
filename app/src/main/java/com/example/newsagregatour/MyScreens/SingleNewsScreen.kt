@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
@@ -22,6 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,16 +48,17 @@ import kotlinx.serialization.ExperimentalSerializationApi
 fun SingleNewsScreen(newsId: String){
 
     val modifier = Modifier
-
     val viewModel  = hiltViewModel<MainViewModel>()
 
     var currentNewsItem by remember {mutableStateOf<NewsItem?>(null)}
+
     CoroutineScope(Dispatchers.IO).launch{
         currentNewsItem = viewModel.getNewsById(newsId.toInt())
     }
 
     Box(modifier = modifier.fillMaxSize()
         .background(brush = singleScreenBrush)) {
+
         Column(modifier = modifier.fillMaxSize()
             .padding(top = 20.dp)
             .padding(horizontal = 10.dp)) {
@@ -61,11 +66,17 @@ fun SingleNewsScreen(newsId: String){
             val article = currentNewsItem?.newsBody
 
             currentNewsItem?.let {it ->
-                AsyncImage(model = it.newsBody.image_url,
-                    modifier = modifier.clip(RoundedCornerShape(5.dp)),
-                    contentDescription = stringResource(R.string.PreviewImg),
-                    alignment = Alignment.Center
-                )
+
+                Box(modifier = modifier.fillMaxWidth()
+                    .height(300.dp),
+                    contentAlignment = Alignment.Center){
+                    AsyncImage(model = it.newsBody.image_url,
+                        modifier = modifier.clip(RoundedCornerShape(5)),
+                        contentScale = ContentScale.FillWidth,
+                        contentDescription = stringResource(R.string.PreviewImg),
+                        alignment = Alignment.Center
+                    )
+                }
 
                 HorizontalDivider(modifier = modifier.fillMaxWidth()
                     .padding(top = 5.dp)
@@ -80,7 +91,10 @@ fun SingleNewsScreen(newsId: String){
                     shape = RoundedCornerShape(5.dp),
                     color = Color.White.copy(alpha = 0.6f)){}
 
-                Column (modifier = modifier.fillMaxSize()){
+                Column (modifier = modifier.fillMaxSize()
+                    .padding(horizontal = 10.dp)
+                    .verticalScroll(rememberScrollState(0))){
+
                     Spacer(modifier = modifier.fillMaxWidth().height(15.dp))
 
                     currentNewsItem?.let {
@@ -104,3 +118,4 @@ fun SingleNewsScreen(newsId: String){
         }
     }
 }
+

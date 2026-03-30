@@ -13,3 +13,4 @@ interface GeneralNewsApiService {
         @Query("language") language: String = "en"
     ): Response<NewsResponse>
 }
+

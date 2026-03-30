@@ -41,10 +41,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -61,6 +61,7 @@ import androidx.compose.ui.draw.clip
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 
@@ -176,6 +177,7 @@ fun ChoosenCategoryes(modifier: Modifier, viewModel: MainViewModel, showBottomSp
 {
     val myCategories  = viewModel.myCategories
     val scrollState = rememberScrollState()
+    val currentCategory by viewModel.currentCategory
 
     fun generateRandomColor(): Color {
         return Color(
@@ -205,20 +207,34 @@ fun ChoosenCategoryes(modifier: Modifier, viewModel: MainViewModel, showBottomSp
             Image(Icons.Default.Add, stringResource(R.string.AddButton))
         }
 
-        val currentCategory = viewModel.currentCategory
+        myCategories.forEach { it ->
 
-        myCategories.forEach { instance ->
-            FilledTonalButton(
-                modifier = modifier.padding(start = 10.dp),
-                onClick = {viewModel.loadNewCategory(instance)},
-                contentPadding = ButtonDefaults.TextButtonContentPadding,
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = remember {generateRandomColor()} )
-            )
-            {
-                Text(text = instance.uppercase(), fontSize = 14.sp, color = Color.Black,
-                    fontWeight = if (instance.lowercase() == currentCategory.value.lowercase()){
-                        FontWeight.Bold} else {FontWeight.Light})
+            Row(modifier = modifier){
+
+                FilledTonalButton(
+                    onClick = {viewModel.loadNewCategory(it)},
+                    modifier = modifier.padding(start = 10.dp),
+                    contentPadding = ButtonDefaults.TextButtonContentPadding,
+                    shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = remember {generateRandomColor()} )
+                )
+                {
+                    Text(text = it.uppercase(), fontSize = 14.sp, color = Color.Black,
+                        fontWeight = if (it.lowercase() == currentCategory.lowercase()){
+                            FontWeight.Bold} else {FontWeight.Light})
+                }
+
+                FilledTonalButton(
+                    onClick = {viewModel.myCategories.remove(it)},
+                    modifier = modifier.width(25.dp),
+                    contentPadding = ButtonDefaults.TextButtonContentPadding,
+                    shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.5F)))
+                {
+                        Text(text = "-", fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black)
+                }
             }
         }
     }
@@ -283,89 +299,111 @@ fun TrendingNews (modifier: Modifier, newsData: Flow<List<NewsItem>>, navControl
 }
 
 @Composable
-fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsItem>>, navController: NavController){
+fun MainNewsList(modifier: Modifier, context: Context, newsList: Flow<List<NewsItem>>, navController: NavController) {
     val thisModifier = modifier
     val thisContext = context
 
-    @OptIn(kotlinx. serialization. ExperimentalSerializationApi::class)
+    @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
     val myNews by newsList.collectAsStateWithLifecycle(initialValue = emptyList())
 
     val listState = rememberLazyListState()
 
-    fun goToSingleArticleScreen(newsItemId: Int){
+    fun goToSingleArticleScreen(newsItemId: Int) {
         navController.navigate(Screens.SingleNewsScreen.route + "/" + newsItemId.toString())
     }
 
-    if (myNews.isNotEmpty()){
-        LazyColumnScrollbar(state = listState,
+    if (myNews.isNotEmpty()) {
+        LazyColumnScrollbar(
+            state = listState,
             settings = ScrollThumbSettings,
             modifier = thisModifier.fillMaxSize()
                 .padding(horizontal = 20.dp)
                 .padding(top = 20.dp),
-        ){
+        ) {
             LazyColumn(
                 state = listState,
                 modifier = thisModifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                items (count = myNews.size, key = {myNews[it].newsId}) {it->
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                items(count = myNews.size, key = { myNews[it].newsId }) { it ->
 
-                    Surface(modifier = thisModifier.fillMaxSize()
-                        .clickable {goToSingleArticleScreen(myNews[it].newsId)},
+                    var isDescriptionExpended by remember { mutableStateOf<Boolean>(false) }
+
+                    Surface(
+                        modifier = thisModifier.fillMaxSize()
+                            .clickable { goToSingleArticleScreen(myNews[it].newsId) },
                         shape = RoundedCornerShape(5.dp),
-                        color = Color.White.copy(0.5F)) {
+                        color = Color.White.copy(0.5F)
+                    ) {
 
-                        Column(modifier = thisModifier.fillMaxWidth(),
+                        Column(
+                            modifier = thisModifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.SpaceAround,
-                            horizontalAlignment = Alignment.CenterHorizontally)
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        )
                         {
                             val previewUrl = myNews[it].newsBody.image_url
 
-                            if (!previewUrl.isNullOrEmpty()){
-                                AsyncImage(model = previewUrl,
+                            if (!previewUrl.isNullOrEmpty()) {
+                                AsyncImage(
+                                    model = previewUrl,
                                     contentDescription = "${myNews[it].newsTitle} preview image",
                                     modifier = thisModifier.fillMaxWidth()
                                         .padding(5.dp)
                                         .clip(RoundedCornerShape(5.dp)),
-                                    contentScale = ContentScale.FillWidth)
+                                    contentScale = ContentScale.FillWidth
+                                )
 
-                            }else{
-                                AsyncImage(model = R.drawable.temporaryimage,
+                            } else {
+                                AsyncImage(
+                                    model = R.drawable.temporaryimage,
                                     contentDescription = "${myNews[it].newsTitle} preview image",
                                     modifier = thisModifier.size(100.dp)
                                         .padding(vertical = 20.dp),
-                                    alpha = 0.5F)
+                                    alpha = 0.5F
+                                )
                             }
 
                             //Title
                             @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
-                            Text(text = myNews[it].newsTitle,
+                            Text(
+                                text = myNews[it].newsTitle,
                                 fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold)
+                                fontWeight = FontWeight.Bold
+                            )
 
                             //Short Description
-                            if (!myNews[it].newsBody.description.isNullOrEmpty()){
+                            if (!myNews[it].newsBody.description.isNullOrEmpty()) {
                                 @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
-                                Text(text = myNews[it].newsBody.description!!,
+                                Text(
+                                    text = myNews[it].newsBody.description!!,
+                                    modifier = modifier.clickable(onClick = {
+                                        isDescriptionExpended = !isDescriptionExpended
+                                    }),
+                                    maxLines = when (isDescriptionExpended) {
+                                        false -> 3
+                                        else -> Int.MAX_VALUE
+                                    },
                                     fontSize = 12.sp,
-                                    fontWeight = FontWeight.Light)
+                                    fontWeight = FontWeight.Light,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                             }
                         }
                     }
                 }
             }
         }
-    }
-
-    else{
-        Box(modifier = thisModifier.fillMaxSize(),
-            contentAlignment = Alignment.Center){
-            Text(text = stringResource(R.string.UnavailableData),
+    } else {
+        Box(
+            modifier = thisModifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.UnavailableData),
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Light)
+                fontWeight = FontWeight.Light
+            )
         }
     }
 }
-
-
-
-

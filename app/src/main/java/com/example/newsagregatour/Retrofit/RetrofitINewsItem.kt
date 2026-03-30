@@ -18,5 +18,6 @@ object RetrofitINewsItem {
     val api : GeneralNewsApiService by lazy {
         retrofit.create(GeneralNewsApiService::class.java)
     }
-
 }
+
+
