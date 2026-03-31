@@ -111,7 +111,11 @@ fun BottomSplashScreen(context: Context, modifier: Modifier, hideBottomSplashScr
                     IconButton(modifier = modifier.fillMaxWidth().padding(40.dp),
                         onClick = {
                             if (validateUserInput(userInput)) {
-                                myMainViewModel.myCategories.addFirst(userInput);
+
+                                // Formating string before putting to common list
+                                val newCategory : String = userInput.lowercase().replaceFirstChar { it.uppercase() }
+
+                                myMainViewModel.myCategories.addFirst(newCategory);
                                 hideBottomSplashScreen()
                             } else {
                                 userInput = ""
