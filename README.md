@@ -43,4 +43,4 @@ to get news data. </ul>
 <ul> - Additional supporting libs </ul>
 
 ## GitHub Pages link:
-- https://github.com/Torin1Mars/NewsAggregator
+https://github.com/Torin1Mars/NewsAggregator
