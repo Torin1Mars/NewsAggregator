@@ -6,7 +6,6 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -29,11 +28,6 @@ fun GreetingScreen(navHostController:NavHostController) {
     val modifier = Modifier
 
     var startAnimation by remember {mutableStateOf(false)}
-    val scaleRatio by animateFloatAsState (
-        targetValue = if (startAnimation) 360f else 0f, animationSpec = spring(
-            dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessVeryLow
-        ), label = "scaleAnimation")
-
 
     val rotationAngle by animateFloatAsState (
         targetValue = if (startAnimation) 360f else 0f, animationSpec = spring(
@@ -69,14 +63,13 @@ fun GreetingScreen(navHostController:NavHostController) {
             .fillMaxSize()
             .clickable (indication = ripple(),  // Uses new IndicationNodeFactory
                     interactionSource = remember { MutableInteractionSource() },
-                onClick = {restartThisScreen()}),
+                onClick = {restartThisScreen()} ),
         contentAlignment = Alignment.Center)
      {
         AnimatedVisibility(
             visible = startAnimation,
-            enter = fadeIn(animationSpec = tween(durationMillis = 1000)) +
-                    scaleIn(animationSpec = tween(durationMillis = 1000)),
-        ) {
+            enter = scaleIn(animationSpec = tween(durationMillis = 1000)) )
+        {
             Image(painter = painterResource(R.drawable.newsicon),
                 contentDescription = stringResource(R.string.StartingPreviewImageDescr),
                 modifier = modifier.rotate(rotationAngle))

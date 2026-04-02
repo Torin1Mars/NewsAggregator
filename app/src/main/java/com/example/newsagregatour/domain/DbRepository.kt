@@ -41,6 +41,7 @@ class DbRepository @Inject constructor(private val newsTableDao: NewsTableDao) {
     suspend fun clearDB(){
         newsTableDao.clearEntireDB()
     }
+
     @ExperimentalSerializationApi
     suspend fun refreshNewsList(myNewNewsList: List<NewsItem>){
         newsTableDao.replaceAllNews(myNewNewsList)

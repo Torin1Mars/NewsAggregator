@@ -1,7 +1,6 @@
 package com.example.newsagregatour.ViewModels
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -28,10 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(@ApplicationContext private val context: Context, private val newsRepository : DbRepository): ViewModel()
 {
-    init {
-        //loadNewNews()
-        //clearDB()
 
+    init {
         initialNewsSize()
     }
 
@@ -128,4 +125,5 @@ class MainViewModel @Inject constructor(@ApplicationContext private val context:
     fun addNewCategory(newCategory: String){
         myCategories.add(newCategory)
     }
+
 }

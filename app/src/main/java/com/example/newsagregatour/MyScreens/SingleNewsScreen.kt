@@ -1,5 +1,6 @@
 package com.example.newsagregatour.MyScreens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.foundation.layout.Box
@@ -24,8 +25,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -70,12 +71,23 @@ fun SingleNewsScreen(newsId: String){
                 Box(modifier = modifier.fillMaxWidth()
                     .height(300.dp),
                     contentAlignment = Alignment.Center){
-                    AsyncImage(model = it.newsBody.image_url,
-                        modifier = modifier.clip(RoundedCornerShape(5)),
-                        contentScale = ContentScale.FillWidth,
-                        contentDescription = stringResource(R.string.PreviewImg),
-                        alignment = Alignment.Center
-                    )
+
+                    if (it.newsBody.image_url.isNullOrEmpty()){
+                        Image(painter = painterResource(R.drawable.temporaryimage),
+                            contentDescription = stringResource(R.string.UnavailableData),
+                            modifier = modifier.fillMaxWidth()
+                                .clip(RoundedCornerShape(5.dp)),
+                            alpha = 0.5F)
+                    }
+                    else{
+                        AsyncImage(model = it.newsBody.image_url,
+                            modifier = modifier.clip(RoundedCornerShape(5)),
+                            error = painterResource(R.drawable.temporaryimage),
+                            contentScale = ContentScale.FillWidth,
+                            contentDescription = stringResource(R.string.PreviewImg),
+                            alignment = Alignment.Center
+                        )
+                    }
                 }
 
                 HorizontalDivider(modifier = modifier.fillMaxWidth()
@@ -118,4 +130,3 @@ fun SingleNewsScreen(newsId: String){
         }
     }
 }
-

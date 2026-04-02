@@ -17,9 +17,6 @@ interface NewsTableDao {
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun insertNewNews(newsItem: NewsItem)
 
-        @Insert
-        suspend fun insertNewsItem(newsItem: NewsItem)
-
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun insertNewsList(newsList: List<NewsItem>)
 
@@ -35,11 +32,11 @@ interface NewsTableDao {
 
         //Updating
         @Update()
-        suspend fun updateNewsItem(newsItem: NewsItem)
+        suspend fun updateNewsItem(newsItem: NewsItem): Unit
 
         //Deleting
         @Delete
-        suspend fun deleteOneNews(myNewsItem: NewsItem)
+        suspend fun deleteOneNews(myNewsItem: NewsItem): Unit
 
         @Query("DELETE FROM NewsTable")
         suspend fun clearEntireDB(): Unit

@@ -76,7 +76,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.random.Random
 import my.nanihadesuka.compose.LazyColumnScrollbar
 
-
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun MainScreen(navHostController: NavHostController){
@@ -283,17 +282,33 @@ fun TrendingNews (modifier: Modifier, newsData: Flow<List<NewsItem>>, navControl
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalArrangement = Arrangement.spacedBy(5.dp))
     {
-        items (count = myNewsData.size, key =  {myNewsData[it].newsId}) {
+        items (count = myNewsData.size, key =  {myNewsData[it].newsId}) {newsItem ->
 
-            AsyncImage(
-                model = myNewsData[it].newsBody.image_url,
-                contentDescription = "${myNewsData[it].newsTitle} preview image",
-                contentScale = ContentScale.Fit,
-                modifier = modifier.clickable {goToSingleArticleScreen(myNewsData[it].newsId)}
-                    .fillMaxWidth()
-                    .padding(5.dp)
-                    .clip(RoundedCornerShape(5.dp))
-            )
+            val thisNewsItem: NewsItem  = myNewsData[newsItem]
+
+
+            if (thisNewsItem.newsBody.image_url.isNullOrEmpty()){
+
+                Image(painter = painterResource(R.drawable.temporaryimage),
+                    contentDescription = stringResource(R.string.UnavailableData),
+                    modifier = modifier.clickable {goToSingleArticleScreen(thisNewsItem.newsId)}
+                        .clip(RoundedCornerShape(5.dp)),
+                    alpha = 0.5F)
+            }else{
+
+                AsyncImage(
+                    model =  thisNewsItem.newsBody.image_url,
+                    error = painterResource(R.drawable.temporaryimage),
+
+                    contentDescription = "${thisNewsItem.newsTitle} preview image",
+                    contentScale = ContentScale.Fit,
+                    modifier = modifier.clickable {goToSingleArticleScreen(thisNewsItem.newsId)}
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                        .clip(RoundedCornerShape(5.dp)),
+                    onLoading = {  }
+                )
+            }
         }
     }
 }

@@ -1,13 +1,10 @@
 package com.example.newsagregatour.MyScreens
 
-import android.R.attr.textStyle
 import android.content.Context
-import android.graphics.drawable.Icon
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -31,9 +27,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -44,11 +38,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.RemoteInput
-import androidx.room.util.TableInfo
 import com.example.newsagregatour.R
 import com.example.newsagregatour.ViewModels.MainViewModel
 import kotlinx.coroutines.launch
@@ -115,7 +106,7 @@ fun BottomSplashScreen(context: Context, modifier: Modifier, hideBottomSplashScr
                                 // Formating string before putting to common list
                                 val newCategory : String = userInput.lowercase().replaceFirstChar { it.uppercase() }
 
-                                myMainViewModel.myCategories.addFirst(newCategory);
+                                myMainViewModel.addNewCategory(newCategory);
                                 hideBottomSplashScreen()
                             } else {
                                 userInput = ""
