@@ -16,6 +16,7 @@ import com.example.newsagregatour.MyScreens.GreetingScreen
 import com.example.newsagregatour.MyScreens.MainScreen
 import com.example.newsagregatour.MyScreens.Screens
 import com.example.newsagregatour.MyScreens.SingleNewsScreen
+import com.example.newsagregatour.domain.AppDatabase
 import com.example.newsagregatour.ui.theme.NewsAgregatourTheme
 import dagger.hilt.android.AndroidEntryPoint
 

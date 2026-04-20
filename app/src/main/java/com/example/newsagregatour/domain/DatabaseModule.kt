@@ -23,4 +23,3 @@ object DatabaseModule {
     @Provides
     fun provideUserDao(db: AppDatabase): NewsTableDao = db.newsTableDao()
 }
-

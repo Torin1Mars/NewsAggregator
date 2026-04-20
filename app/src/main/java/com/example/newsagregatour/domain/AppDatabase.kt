@@ -14,6 +14,7 @@ import kotlinx.serialization.json.Json
 @Database(entities = [NewsItem::class], version = 1, exportSchema = false)
 @TypeConverters(ArticleConverter::class)
 abstract class AppDatabase: RoomDatabase() {
+
     abstract fun newsTableDao(): NewsTableDao
 
     companion object {
